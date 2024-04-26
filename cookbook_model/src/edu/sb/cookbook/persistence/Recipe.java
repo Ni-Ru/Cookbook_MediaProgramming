@@ -3,8 +3,8 @@ package edu.sb.cookbook.persistence;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -19,18 +19,18 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(schema = "cookbook", name="Recipe")
 @PrimaryKeyJoinColumn(name="recipeIdentity")
-public class Recipe {
+@DiscriminatorValue("Recipe")
+public class Recipe extends BaseEntity{
 
 	@ManyToOne
 	private Document avatar;
 	
 	@ManyToOne
-	@JoinColumn(name = "ownerReference", nullable = true, updatable = true)
 	private Person owner;
 	
 	@NotNull
-	@Column(nullable = false, updatable = false)
-	@OneToMany(mappedBy = "recipe", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
+	@JoinColumn
+	@OneToMany
 	private Set<Ingredient> ingredients;
 	
 	@NotNull

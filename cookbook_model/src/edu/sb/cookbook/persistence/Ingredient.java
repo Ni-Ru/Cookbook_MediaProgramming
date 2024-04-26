@@ -1,6 +1,7 @@
 package edu.sb.cookbook.persistence;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,11 +15,11 @@ import javax.validation.constraints.PositiveOrZero;
 @Entity
 @Table(schema = "cookbook", name="Ingredient")
 @PrimaryKeyJoinColumn(name="ingredientIdentity")
-public class Ingredient {
+@DiscriminatorValue("Ingredient")
+public class Ingredient extends BaseEntity{
 	
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "recipeReference", nullable = true, updatable = true)
 	private Recipe recipe;
 	
 	@ManyToOne @JoinColumn

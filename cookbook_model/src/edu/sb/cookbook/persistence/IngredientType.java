@@ -12,20 +12,19 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(schema = "cookbook", name="IngredientType")
+@Table(schema = "cookbook", name="IngredientType", indexes={})
 @PrimaryKeyJoinColumn(name="ingredientTypeIdentity")
 @DiscriminatorValue("IngredientType")
-public class IngredientType {
+
+public class IngredientType extends BaseEntity {
 	
-	@NotNull
 	@ManyToOne
 	private Document avatar;
 	
 	@ManyToOne
-	@JoinColumn(name = "ingredientTypes", nullable = true, updatable = true)
+	@JoinColumn(name = "ingredientTypes")
 	private Person owner;
 	
-	@NotNull
 	@Column(nullable = true, updatable = true)
 	private String alias;
 	
@@ -38,6 +37,10 @@ public class IngredientType {
 	
 	public IngredientType() {
 		this.restriction = Restriction.NONE;
+		this.avatar = null;
+		this.owner = null;
+		this.alias = null;
+		this.description = null;
 	}
 	
 	

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,7 +25,8 @@ import java.util.HashSet;
 @Entity
 @Table(schema = "cookbook", name="Person")
 @PrimaryKeyJoinColumn(name="personIdentity")
-public class Person{
+@DiscriminatorValue("Person")
+public class Person extends BaseEntity{
 	
 	@NotNull
 	@ManyToOne @JoinColumn
@@ -38,6 +40,7 @@ public class Person{
 	@OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
     private Set<IngredientType> ingredientTypes;
     
+	@NotNull
 	@Email
 	@Column(nullable = true, updatable = true)
     private String email;
@@ -67,6 +70,8 @@ public class Person{
     static private final String DEFAULT_PASSWORD_HASH = HashCodes.sha2HashText(256, "changeit");
 	
 	public Person() {
+		this.name = new Name();
+		this.address = new Address();
         this.recipes = new HashSet<Recipe>();
         this.ingredientTypes = new HashSet<IngredientType>();
         this.group = Person.Group.USER;
