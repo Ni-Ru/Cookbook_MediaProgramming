@@ -10,37 +10,39 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.eclipse.persistence.annotations.CacheIndex;
 
 @Entity
 @Table(schema = "cookbook", name="IngredientType", indexes={})
 @PrimaryKeyJoinColumn(name="ingredientTypeIdentity")
 @DiscriminatorValue("IngredientType")
-
 public class IngredientType extends BaseEntity {
 	
-	@ManyToOne
-	private Document avatar;
+	@ManyToOne(optional = false)
+    @JoinColumn(nullable = false, updatable = true, name = "avatarReference")
+    private Document avatar;
 	
-	@ManyToOne
-	@JoinColumn(name = "ingredientTypes")
+	@ManyToOne(optional = false)
+	@JoinColumn(nullable = true, updatable = true, name = "ownerReference")
 	private Person owner;
 	
-	@Column(nullable = true, updatable = true)
+	@NotNull @Size(max=128)
+	@Column(nullable = true, updatable = true, length = 128, unique = true)
+	@CacheIndex(updateable = true)
 	private String alias;
 	
-	@NotNull  @Enumerated(EnumType.STRING)
+	@NotNull @Enumerated(EnumType.STRING)
 	@Column(nullable = false, updatable = true)
 	private Restriction restriction;
 	
-	@Column(nullable = true, updatable = true)
+	@Size(max=4094)
+	@Column(nullable = true, updatable = true, length = 4094)
 	private String description;
 	
 	public IngredientType() {
-		this.restriction = Restriction.NONE;
-		this.avatar = null;
-		this.owner = null;
-		this.alias = null;
-		this.description = null;
+		this.restriction = Restriction.VEGAN;
 	}
 	
 	

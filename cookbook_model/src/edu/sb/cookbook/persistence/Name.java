@@ -4,27 +4,35 @@ import java.util.Comparator;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Embeddable
 public class Name implements Comparable<Name> {
 
-	@Column(nullable = true, updatable = true)
+	static public final Comparator<Name> COMPARATOR = 
+		Comparator
+            .comparing(Name::getTitle, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(Name::getFamily)
+            .thenComparing(Name::getGiven);
+	
+	@Size(max=15)
+	@Column(nullable = true, updatable = true, length = 15)
 	private String title;
 
-	@Size(max=30,min=2)
-	@Column(nullable = true, updatable = true)
+	@NotNull @Size(max=31)
+	@Column(nullable = false, updatable = true, length = 31, name = "surname")
 	private String family;
 
-	@Size(max=30,min=2)
-	@Column(nullable = true, updatable = true)
+	@NotNull @Size(max=31)
+	@Column(nullable = false, updatable = true, length = 31, name = "forename")
 	private String given;
 
 	public String getTitle() {
 		return this.title;
 	}
 
-	protected void setTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
@@ -32,7 +40,7 @@ public class Name implements Comparable<Name> {
 		return this.family;
 	}
 
-	protected void setFamily(String family) {
+	public void setFamily(String family) {
 		this.family = family;
 	}
 
@@ -40,17 +48,13 @@ public class Name implements Comparable<Name> {
 		return this.given;
 	}
 
-	protected void setGiven(String given) {
+	public void setGiven(String given) {
 		this.given = given;
 	}
 
 	@Override
     public int compareTo(Name other) {
-        return Comparator
-                .comparing(Name::getTitle, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(Name::getFamily)
-                .thenComparing(Name::getGiven)
-                .compare(this, other);
+        return COMPARATOR.compare(this, other);
     }
 
 }

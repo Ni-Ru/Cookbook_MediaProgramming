@@ -3,8 +3,10 @@ package edu.sb.cookbook.persistence;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,14 +14,18 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.eclipse.persistence.annotations.CacheIndex;
 
 import edu.sb.tool.HashCodes;
 
+import java.util.Collections;
 import java.util.HashSet;
 
 @Entity
@@ -28,69 +34,65 @@ import java.util.HashSet;
 @DiscriminatorValue("Person")
 public class Person extends BaseEntity{
 	
-	@NotNull
-	@ManyToOne @JoinColumn
-	private Document avatar;
-	
-	@NotNull
-	@OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
-    private Set<Recipe> recipes;
-	
-	@NotNull
-	@OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
-    private Set<IngredientType> ingredientTypes;
-    
-	@NotNull
-	@Email
-	@Column(nullable = true, updatable = true)
+	static public enum Group { ADMIN, USER }
+    static private final String DEFAULT_PASSWORD_HASH = HashCodes.sha2HashText(256, "changeit");
+
+	@NotNull @Email @Size(max=128)
+	@Column(nullable = false, updatable = true, length = 128, unique = true)
+	@CacheIndex(updateable = true)
     private String email;
     
-    @NotNull
-    @Column(nullable = false, updatable = true)
+    @NotNull @Size(min=64, max=64)
+    @Column(nullable = false, updatable = true, length = 64)
     private String passwordHash;
     
-    @NotNull @Enumerated(EnumType.STRING)
-    @Column(nullable = false, updatable = true)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = true, name = "groupAlias")
     private Person.Group group;
     
     @NotNull
     @Embedded
-    @OneToOne @JoinColumn
     private Name name;
     
     @NotNull
     @Embedded
-    @OneToOne @JoinColumn
     private Address address;
     
     @NotNull
-    @Column(nullable = false, updatable = false)
-    private Set<String> phone;
+    @ElementCollection
+    @CollectionTable(
+    		schema = "cookbook",
+    		name="PhoneAssociation",
+    		joinColumns = @JoinColumn(nullable = false, updatable = false, insertable = true, name = "personReference"),
+    		uniqueConstraints = @UniqueConstraint(columnNames = {"personReference", "phone"})
+    )
+    @Column(nullable = false, updatable = false, insertable = true, length = 16, name = "phone")
+    private Set<String> phones;
     
-    static private final String DEFAULT_PASSWORD_HASH = HashCodes.sha2HashText(256, "changeit");
-	
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false, updatable = true, name = "avatarReference")
+    private Document avatar;
+    
+    // CascadeType.REMOVE ist nicht mit dabei weil on delete set null
+    @NotNull
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    private Set<Recipe> recipes;
+    
+    // CascadeType.REMOVE ist nicht mit dabei weil on delete set null
+    @NotNull
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    private Set<IngredientType> ingredientTypes;
+   	
 	public Person() {
+		this.passwordHash = DEFAULT_PASSWORD_HASH;
+		this.group = Person.Group.USER;
 		this.name = new Name();
 		this.address = new Address();
-        this.recipes = new HashSet<Recipe>();
-        this.ingredientTypes = new HashSet<IngredientType>();
-        this.group = Person.Group.USER;
-        this.phone = new HashSet<String>();
-        this.passwordHash = DEFAULT_PASSWORD_HASH;
+		this.phones = new HashSet<String>();
+        this.recipes = Collections.emptySet();
+        this.ingredientTypes = Collections.emptySet();
     }
-	
-	static public enum Group {
-		ADMIN,
-		USER;
-		
-		public String getName() {
-			return this.name();
-		}
-		
-		public int getOrdinal() {
-			return this.ordinal();
-		}
-	}
 
 	public Document getAvatar() {
 		return avatar;
@@ -156,11 +158,11 @@ public class Person extends BaseEntity{
 		this.address = address;
 	}
 
-	public Set<String> getPhone() {
-		return phone;
+	public Set<String> getPhones() {
+		return phones;
 	}
 
-	protected void setPhone(Set<String> phone) {
-		this.phone = phone;
+	protected void setPhones(Set<String> phones) {
+		this.phones = phones;
 	}
 }

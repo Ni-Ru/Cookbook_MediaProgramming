@@ -8,18 +8,28 @@ import javax.validation.constraints.Size;
 
 @Embeddable
 public class Address implements Comparable<Address>{
+	
+	static public final Comparator<Address> COMPARATOR = 
+		Comparator
+            .comparing(Address::getCountry)
+            .thenComparing(Address::getCity)
+            .thenComparing(Address::getStreet)
+            .thenComparing(Address::getPostcode);
 
 	@Size(max=15)
-	@Column(nullable = true, updatable = true)
+	@Column(nullable = true, updatable = true, length = 15)
 	private String postcode;
 
-	@Column(nullable = true, updatable = true)
+	@Size(max=63)
+	@Column(nullable = true, updatable = true, length = 63)
 	private String street;
 
-	@Column(nullable = true, updatable = true)
+	@Size(max=63)
+	@Column(nullable = true, updatable = true, length = 63)
 	private String city;
 
-	@Column(nullable = true, updatable = true)
+	@Size(max=63)
+	@Column(nullable = true, updatable = true, length = 63)
 	private String country;
 
 	public String getPostcode() {
@@ -56,12 +66,7 @@ public class Address implements Comparable<Address>{
 
 	@Override
     public int compareTo(Address other) {
-        return Comparator
-                .comparing(Address::getCountry)
-                .thenComparing(Address::getCity)
-                .thenComparing(Address::getStreet)
-                .thenComparing(Address::getPostcode)
-                .compare(this, other);
+        return COMPARATOR.compare(this, other);
     }
 
 }

@@ -1,82 +1,84 @@
 package edu.sb.cookbook.persistence;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.eclipse.persistence.annotations.CacheIndex;
 
 @Entity
-@Table(schema = "cookbook", name="Recipe")
-@PrimaryKeyJoinColumn(name="recipeIdentity")
+@Table(schema = "cookbook", name = "Recipe")
+@PrimaryKeyJoinColumn(name = "recipeIdentity")
 @DiscriminatorValue("Recipe")
-public class Recipe extends BaseEntity{
-
-	@ManyToOne
-	private Document avatar;
-	
-	@ManyToOne
-	private Person owner;
-	
-	@NotNull
-	@JoinColumn
-	@OneToMany
-	private Set<Ingredient> ingredients;
-	
-	@NotNull
-	@ManyToMany
-	@JoinColumn
-	private Set<Document> illustrations;
-	
-	@NotNull  @Enumerated(EnumType.STRING)
-	@Column(nullable = false, updatable = true)
-	private Recipe.Category category;
-	
-	@NotNull
-	@Column(nullable = false, updatable = true)
-	private String title;
-	
-	@Column(nullable = false, updatable = true)
-	private String description;
-	
-	@NotNull
-	@Column(nullable = false, updatable = true)
-	private String instruction;
-	
-	public Recipe() {
-		this.category = Recipe.Category.MAIN_COURSE;
-		this.ingredients = new HashSet<Ingredient>();
-		this.illustrations = new HashSet<Document>();
-	}
+public class Recipe extends BaseEntity {
 	
 	static public enum Category {
-		MAIN_COURSE,
-		APPETIZER,
-		SNACK,
-		DESSERT,
-		BREAKFAST,
-		BUFFET,
-		BARBEQUE,
-		ADOLESCENT,
-		INFANT;
-		
-		public String getName() {
-			return this.name();
-		}
-		
-		public int getOrdinal() {
-			return this.ordinal();
-		}
+		MAIN_COURSE, APPETIZER, SNACK, DESSERT, BREAKFAST, BUFFET, BARBEQUE, ADOLESCENT, INFANT
+	}
+
+	@ManyToOne(optional = false)
+    @JoinColumn(nullable = false, updatable = true, name = "avatarReference")
+    private Document avatar;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(nullable = true, updatable = true, name = "ownerReference")
+	private Person owner;
+
+	@NotNull
+	@OneToMany(mappedBy = "recipe", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
+	private Set<Ingredient> ingredients;
+
+	@NotNull
+	@ManyToMany
+	@JoinTable(
+			schema = "cookbook",
+			name = "RecipeIllustrationAssociation",
+			joinColumns = @JoinColumn(nullable = false, updatable = false, insertable = true, name = "recipeReference"),
+			inverseJoinColumns = @JoinColumn(nullable = false, updatable = false, insertable = true, name = "documentReference"),
+			uniqueConstraints = @UniqueConstraint(columnNames = { "recipeReference", "documentReference" })
+	)
+	private Set<Document> illustrations;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, updatable = true)
+	private Category category;
+
+	@NotNull @Size(max=128)
+	@Column(nullable = false, updatable = true, length = 128, unique = true)
+	@CacheIndex(updateable = true)
+	private String title;
+
+	@Size(max=4094)
+	@Column(nullable = true, updatable = true, length = 4094)
+	private String description;
+
+	@Size(max=4094)
+	@Column(nullable = true, updatable = true, length = 4094)
+	private String instruction;
+
+	public Recipe() {
+		this.category = Category.MAIN_COURSE;
+		this.ingredients = Collections.emptySet();
+		this.illustrations = new HashSet<>();
 	}
 
 	public Document getAvatar() {
@@ -94,14 +96,18 @@ public class Recipe extends BaseEntity{
 	public void setOwner(Person owner) {
 		this.owner = owner;
 	}
+	
+	protected int getIngredientCount() {
+		return this.ingredients.size();
+	}
 
 	public Set<Ingredient> getIngredients() {
-        return ingredients;
-    }
+		return ingredients;
+	}
 
-    protected void setIngredients(Set<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
+	protected void setIngredients(Set<Ingredient> ingredients) {
+		this.ingredients = ingredients;
+	}
 
 	public Set<Document> getIllustrations() {
 		return illustrations;
@@ -142,22 +148,25 @@ public class Recipe extends BaseEntity{
 	public void setInstruction(String instruction) {
 		this.instruction = instruction;
 	}
-	
+
 	public Restriction getRestriction() {
+		// Java.Collection.Stream API
+		return this.ingredients.stream().map(Ingredient::getType).map(IngredientType::getRestriction).min(Comparator.naturalOrder()).orElse(Restriction.VEGAN);
+				
+//		if (ingredients.isEmpty()) {
+//			return Restriction.NONE;
+//		}
+//
+//		Restriction minRestriction = Restriction.VEGAN;
+//		for (Ingredient ingredient : ingredients) {
+//			Restriction ingredientRestriction = ingredient.getType().getRestriction();
+//			if (ingredientRestriction.getOrdinal() < minRestriction.getOrdinal()) {
+//				minRestriction = ingredientRestriction;
+//			}
+//		}
+//		return minRestriction;
 		
-		if (ingredients.isEmpty()) {
-            return Restriction.NONE;
-        }
-        
-        Restriction minRestriction = Restriction.VEGAN;
-        for (Ingredient ingredient : ingredients) {
-            Restriction ingredientRestriction = ingredient.getType().getRestriction();
-            if (ingredientRestriction.getOrdinal() < minRestriction.getOrdinal()) {
-                minRestriction = ingredientRestriction;
-            }
-        }
-        return minRestriction;
-		
+
 	}
-	
+
 }

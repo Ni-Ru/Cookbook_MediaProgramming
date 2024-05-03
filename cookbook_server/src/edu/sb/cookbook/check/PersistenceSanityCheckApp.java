@@ -20,6 +20,7 @@ public class PersistenceSanityCheckApp {
 		final EntityManager entitymanager = factory.createEntityManager();
 
 		final Document defaultAvatar = entitymanager.find(Document.class, 1L);
+		if(defaultAvatar==null) throw new NullPointerException();
 		System.out.println("Default avatar size: " + defaultAvatar.getContent().length + " Bytes");
 	}
 }

@@ -18,36 +18,36 @@ import javax.validation.constraints.PositiveOrZero;
 @DiscriminatorValue("Ingredient")
 public class Ingredient extends BaseEntity{
 	
-	@NotNull
-	@ManyToOne
+	static public enum Unit {
+		LITRE, GRAM, TEASPOON, TABLESPOON, PINCH, CUP, CAN, TUBE, BUSHEL, PIECE
+	}
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(nullable = false, updatable = false, insertable = true, name = "recipeReference")
 	private Recipe recipe;
 	
-	@ManyToOne @JoinColumn
+	@ManyToOne(optional = false)
+	@JoinColumn(nullable = false, updatable = true, name = "typeReference")
     private IngredientType type;
 	
-	@NotNull @PositiveOrZero
+	@PositiveOrZero
 	@Column(nullable = false, updatable = true)
     private float amount;
 	
-	@NotNull  @Enumerated(EnumType.STRING)
+	@NotNull
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, updatable = true)
-    private Ingredient.Unit unit;
+    private Unit unit;
 
-    public Ingredient() {
-        this.unit = Ingredient.Unit.GRAM;
-    }
-    
-	static public enum Unit {
-		LITRE, GRAM, TEASPOON, TABLESPOON, PINCH, CUP, CAN, TUBE, BUSHEL, PIECE;
-
-		public String getName() {
-			return this.name();
-		}
-
-		public int getOrdinal() {
-			return this.ordinal();
-		}
+	protected Ingredient() {
+		this(null);
 	}
+	
+	// Braucht zwei Konstruktoren
+    public Ingredient(Recipe recipe) {
+    	this.recipe = recipe;
+        this.unit = Unit.GRAM;
+    }
 
 	public Recipe getRecipe() {
 		return recipe;
