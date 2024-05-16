@@ -2,11 +2,17 @@ package edu.sb.cookbook.persistence;
 
 import java.util.Comparator;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Size;
 
-@Embeddable
+import edu.sb.tool.JsonProtectedPropertyStrategy;
+
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
+@Embeddable 
 public class Address implements Comparable<Address>{
 	
 	static public final Comparator<Address> COMPARATOR = 
@@ -32,6 +38,8 @@ public class Address implements Comparable<Address>{
 	@Column(nullable = true, updatable = true, length = 63)
 	private String country;
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getPostcode() {
 		return postcode;
 	}
@@ -40,6 +48,8 @@ public class Address implements Comparable<Address>{
 		this.postcode = postcode;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getStreet() {
 		return street;
 	}
@@ -48,6 +58,8 @@ public class Address implements Comparable<Address>{
 		this.street = street;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getCity() {
 		return city;
 	}
@@ -56,6 +68,8 @@ public class Address implements Comparable<Address>{
 		this.city = city;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getCountry() {
 		return country;
 	}

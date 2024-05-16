@@ -5,6 +5,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbVisibility;
+import edu.sb.tool.JsonProtectedPropertyStrategy;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -28,6 +32,7 @@ import org.eclipse.persistence.annotations.CacheIndex;
 @Table(schema = "cookbook", name = "Recipe")
 @PrimaryKeyJoinColumn(name = "recipeIdentity")
 @DiscriminatorValue("Recipe")
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
 public class Recipe extends BaseEntity {
 	
 	static public enum Category {
@@ -81,6 +86,8 @@ public class Recipe extends BaseEntity {
 		this.illustrations = new HashSet<>();
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Document getAvatar() {
 		return avatar;
 	}
@@ -89,6 +96,8 @@ public class Recipe extends BaseEntity {
 		this.avatar = avatar;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Person getOwner() {
 		return owner;
 	}
@@ -97,10 +106,14 @@ public class Recipe extends BaseEntity {
 		this.owner = owner;
 	}
 	
+	@JsonbProperty
+	@JsonbTransient
 	protected int getIngredientCount() {
-		return this.ingredients.size();
+		return this.ingredients == null ? null : this.ingredients.size();
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Set<Ingredient> getIngredients() {
 		return ingredients;
 	}
@@ -109,6 +122,8 @@ public class Recipe extends BaseEntity {
 		this.ingredients = ingredients;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Set<Document> getIllustrations() {
 		return illustrations;
 	}
@@ -117,6 +132,8 @@ public class Recipe extends BaseEntity {
 		this.illustrations = illustrations;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Recipe.Category getCategory() {
 		return category;
 	}
@@ -125,6 +142,8 @@ public class Recipe extends BaseEntity {
 		this.category = category;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getTitle() {
 		return title;
 	}
@@ -133,6 +152,8 @@ public class Recipe extends BaseEntity {
 		this.title = title;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getDescription() {
 		return description;
 	}
@@ -141,6 +162,8 @@ public class Recipe extends BaseEntity {
 		this.description = description;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getInstruction() {
 		return instruction;
 	}
@@ -149,6 +172,8 @@ public class Recipe extends BaseEntity {
 		this.instruction = instruction;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Restriction getRestriction() {
 		// Java.Collection.Stream API
 		return this.ingredients.stream().map(Ingredient::getType).map(IngredientType::getRestriction).min(Comparator.naturalOrder()).orElse(Restriction.VEGAN);
@@ -168,5 +193,11 @@ public class Recipe extends BaseEntity {
 		
 
 	}
-
+	
+	@JsonbProperty
+	@JsonbTransient
+	protected long getOwnerReference(){
+		return this.owner == null ? null : this.owner.getIdentity();
+	}
+	
 }

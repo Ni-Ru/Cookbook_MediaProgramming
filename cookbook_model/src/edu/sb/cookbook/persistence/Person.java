@@ -2,6 +2,10 @@ package edu.sb.cookbook.persistence;
 
 import java.util.Set;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbVisibility;
+import edu.sb.tool.JsonProtectedPropertyStrategy;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -32,6 +36,7 @@ import java.util.HashSet;
 @Table(schema = "cookbook", name="Person")
 @PrimaryKeyJoinColumn(name="personIdentity")
 @DiscriminatorValue("Person")
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
 public class Person extends BaseEntity{
 	
 	static public enum Group { ADMIN, USER }
@@ -94,6 +99,8 @@ public class Person extends BaseEntity{
         this.ingredientTypes = Collections.emptySet();
     }
 
+	@JsonbProperty
+	@JsonbTransient
 	public Document getAvatar() {
 		return avatar;
 	}
@@ -102,6 +109,8 @@ public class Person extends BaseEntity{
 		this.avatar = avatar;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Set<Recipe> getRecipes() {
 		return recipes;
 	}
@@ -110,6 +119,8 @@ public class Person extends BaseEntity{
 		this.recipes = recipes;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Set<IngredientType> getIngredientTypes() {
 		return ingredientTypes;
 	}
@@ -118,6 +129,8 @@ public class Person extends BaseEntity{
 		this.ingredientTypes = ingredientTypes;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getEmail() {
 		return email;
 	}
@@ -126,6 +139,8 @@ public class Person extends BaseEntity{
 		this.email = email;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getPasswordHash() {
 		return passwordHash;
 	}
@@ -134,6 +149,8 @@ public class Person extends BaseEntity{
 		this.passwordHash = passwordHash;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Person.Group getGroup() {
 		return group;
 	}
@@ -142,6 +159,8 @@ public class Person extends BaseEntity{
 		this.group = group;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Name getName() {
 		return name;
 	}
@@ -150,6 +169,8 @@ public class Person extends BaseEntity{
 		this.name = name;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Address getAddress() {
 		return address;
 	}
@@ -158,6 +179,8 @@ public class Person extends BaseEntity{
 		this.address = address;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public Set<String> getPhones() {
 		return phones;
 	}

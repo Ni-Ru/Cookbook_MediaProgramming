@@ -2,11 +2,17 @@ package edu.sb.cookbook.persistence;
 
 import java.util.Comparator;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import edu.sb.tool.JsonProtectedPropertyStrategy;
+
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
 @Embeddable
 public class Name implements Comparable<Name> {
 
@@ -28,6 +34,8 @@ public class Name implements Comparable<Name> {
 	@Column(nullable = false, updatable = true, length = 31, name = "forename")
 	private String given;
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getTitle() {
 		return this.title;
 	}
@@ -36,6 +44,8 @@ public class Name implements Comparable<Name> {
 		this.title = title;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getFamily() {
 		return this.family;
 	}
@@ -44,6 +54,8 @@ public class Name implements Comparable<Name> {
 		this.family = family;
 	}
 
+	@JsonbProperty
+	@JsonbTransient
 	public String getGiven() {
 		return this.given;
 	}

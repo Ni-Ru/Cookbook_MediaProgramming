@@ -1,6 +1,7 @@
 package edu.sb.cookbook.persistence;
 
 import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -59,6 +60,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 
 
 	@JsonbProperty
+	@JsonbTransient
 	public long getIdentity () {
 		return this.identity;
 	}
@@ -70,6 +72,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 
 
 	@JsonbProperty
+	@JsonbTransient
 	public int getVersion () {
 		return this.version;
 	}
@@ -81,6 +84,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 
 
 	@JsonbProperty
+	@JsonbTransient
 	public long getCreated () {
 		return this.created;
 	}
@@ -92,6 +96,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 
 
 	@JsonbProperty
+	@JsonbTransient
 	public long getModified () {
 		return this.modified;
 	}

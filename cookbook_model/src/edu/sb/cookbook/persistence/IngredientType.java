@@ -1,5 +1,8 @@
 package edu.sb.cookbook.persistence;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -14,10 +17,13 @@ import javax.validation.constraints.Size;
 
 import org.eclipse.persistence.annotations.CacheIndex;
 
+import edu.sb.tool.JsonProtectedPropertyStrategy;
+
 @Entity
 @Table(schema = "cookbook", name="IngredientType", indexes={})
 @PrimaryKeyJoinColumn(name="ingredientTypeIdentity")
 @DiscriminatorValue("IngredientType")
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
 public class IngredientType extends BaseEntity {
 	
 	@ManyToOne(optional = false)
@@ -46,6 +52,8 @@ public class IngredientType extends BaseEntity {
 	}
 	
 	
+	@JsonbProperty
+	@JsonbTransient
 	public Document getAvatar() {
 		return avatar;
 	}
@@ -54,6 +62,8 @@ public class IngredientType extends BaseEntity {
 		this.avatar = avatar;
 	}
 	
+	@JsonbProperty
+	@JsonbTransient
 	public Person getOwner() {
 		return owner;
 	}
@@ -62,6 +72,8 @@ public class IngredientType extends BaseEntity {
 		this.owner = owner;
 	}
 	
+	@JsonbProperty
+	@JsonbTransient
 	public String getAlias() {
 		return alias;
 	}
@@ -70,6 +82,8 @@ public class IngredientType extends BaseEntity {
 		this.alias = alias;
 	}
 	
+	@JsonbProperty
+	@JsonbTransient
 	public Restriction getRestriction() {
 		return restriction;
 	}
@@ -77,12 +91,20 @@ public class IngredientType extends BaseEntity {
 		this.restriction = restriction;
 	}
 	
+	@JsonbProperty
+	@JsonbTransient
 	public String getDescription() {
 		return description;
 	}
 	
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	@JsonbProperty
+	@JsonbTransient
+	protected long getOwnerReference() {
+		return this.owner == null ? null : this.owner.getIdentity();
 	}
 	
 }

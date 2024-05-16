@@ -26,7 +26,7 @@ import edu.sb.cookbook.persistence.Ingredient;
 import edu.sb.cookbook.persistence.IngredientType;
 import edu.sb.cookbook.persistence.Person;
 import edu.sb.cookbook.persistence.Recipe;
-import edu.sb.cookbook.persistence.IngredientType.Restriction;
+import edu.sb.cookbook.persistence.Restriction;
 import edu.sb.cookbook.persistence.Person.Group;
 import edu.sb.tool.RestJpaLifecycleProvider;
 
