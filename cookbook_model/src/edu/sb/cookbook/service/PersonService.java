@@ -171,10 +171,6 @@ public class PersonService {
 			entityManager.getTransaction().begin();
 		}
 
-		// 2nd level cache eviction if necessary
-		final Cache secondLevelCache = entityManager.getEntityManagerFactory().getCache();
-		if (insertMode) secondLevelCache.evict(Person.class, requester.getIdentity());
-
 		return person.getIdentity();
 	}
 	
