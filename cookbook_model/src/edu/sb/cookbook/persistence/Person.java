@@ -100,7 +100,6 @@ public class Person extends BaseEntity{
     }
 
 	@JsonbProperty
-	@JsonbTransient
 	public Document getAvatar() {
 		return avatar;
 	}
@@ -109,7 +108,6 @@ public class Person extends BaseEntity{
 		this.avatar = avatar;
 	}
 
-	@JsonbProperty
 	@JsonbTransient
 	public Set<Recipe> getRecipes() {
 		return recipes;
@@ -119,7 +117,6 @@ public class Person extends BaseEntity{
 		this.recipes = recipes;
 	}
 
-	@JsonbProperty
 	@JsonbTransient
 	public Set<IngredientType> getIngredientTypes() {
 		return ingredientTypes;
@@ -130,7 +127,6 @@ public class Person extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getEmail() {
 		return email;
 	}
@@ -139,7 +135,6 @@ public class Person extends BaseEntity{
 		this.email = email;
 	}
 
-	@JsonbProperty
 	@JsonbTransient
 	public String getPasswordHash() {
 		return passwordHash;
@@ -150,7 +145,6 @@ public class Person extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Person.Group getGroup() {
 		return group;
 	}
@@ -160,7 +154,6 @@ public class Person extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Name getName() {
 		return name;
 	}
@@ -170,7 +163,6 @@ public class Person extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Address getAddress() {
 		return address;
 	}
@@ -180,7 +172,6 @@ public class Person extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Set<String> getPhones() {
 		return phones;
 	}

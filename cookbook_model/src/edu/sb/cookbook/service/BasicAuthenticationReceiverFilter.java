@@ -53,6 +53,8 @@ public class BasicAuthenticationReceiverFilter implements ContainerRequestFilter
 		final MultivaluedMap<String,String> headers = requestContext.getHeaders();
 		
 		if (headers.containsKey(REQUESTER_IDENTITY)) throw new ClientErrorException(Response.Status.BAD_REQUEST);
+		if (requestContext.getMethod().equals("OPTIONS") || requestContext.getMethod().equals("INFO")) return;
+		if (requestContext.getMethod().equals("GET") && requestContext.getUriInfo().getPath().startsWith("documents")) return;
 		
 		// - Remove the "Authorization" header from said map and store the first of it's values in a variable
 		//   "textCredentials", or null if the header value is either null or empty.
@@ -65,7 +67,7 @@ public class BasicAuthenticationReceiverFilter implements ContainerRequestFilter
 			//   combination in variable "credentials". 
 			final String encodedCredentials = textCredentials.substring("Basic ".length());
 			final byte[] bytes = Base64.getDecoder().decode(encodedCredentials);
-			final String decodedCredentials = new String(bytes, StandardCharsets.ISO_8859_1);
+			final String decodedCredentials = new String(bytes, StandardCharsets.UTF_8);
 			final int indexOfFirstColon = decodedCredentials.indexOf(":");
 			final String email = decodedCredentials.substring(0, indexOfFirstColon);
 			final String password = decodedCredentials.substring(indexOfFirstColon + 1);

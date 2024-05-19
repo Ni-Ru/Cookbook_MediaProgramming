@@ -54,8 +54,12 @@ public class Ingredient extends BaseEntity{
     	this.recipe = recipe;
         this.unit = Unit.GRAM;
     }
+    
+    @JsonbProperty
+	protected long getRecipeReference() {
+		return this.recipe == null ? null : this.recipe.getIdentity();
+	}
 
-	@JsonbProperty
 	@JsonbTransient
 	public Recipe getRecipe() {
 		return recipe;
@@ -66,7 +70,6 @@ public class Ingredient extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public IngredientType getType() {
 		return type;
 	}
@@ -76,7 +79,6 @@ public class Ingredient extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public float getAmount() {
 		return amount;
 	}
@@ -86,18 +88,11 @@ public class Ingredient extends BaseEntity{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Ingredient.Unit getUnit() {
 		return unit;
 	}
 
 	public void setUnit(Ingredient.Unit unit) {
 		this.unit = unit;
-	}
-	
-	@JsonbProperty
-	@JsonbTransient
-	protected long getRecipeReference() {
-		return this.recipe == null ? null : this.recipe.getIdentity();
 	}
 }

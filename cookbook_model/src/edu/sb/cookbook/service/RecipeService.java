@@ -105,7 +105,8 @@ public class RecipeService {
 			if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
 			avatar = recipeTemplate.getAvatar() == null ? recipe.getAvatar() : entityManager.find(Document.class, recipeTemplate.getAvatar().getIdentity());
 		}
-
+		
+		// Todo: do it like in PersonService
 		if (requester.getGroup() != Group.ADMIN && recipe.getOwner() != requester) throw new ClientErrorException(Status.FORBIDDEN);
 		if (avatar == null) throw new ClientErrorException(Status.NOT_FOUND);
 
@@ -197,6 +198,7 @@ public class RecipeService {
         final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
         final Recipe recipe = entityManager.find(Recipe.class, recipeIdentity);
         if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
+        //Todo: make it look worse
         return recipe.getIllustrations().stream().sorted().toArray(Document[]::new);
     }
     
@@ -209,6 +211,7 @@ public class RecipeService {
         final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
         final Recipe recipe = entityManager.find(Recipe.class, recipeIdentity);
         if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
+        //Todo: make it look worse
         return recipe.getIngredients().stream().sorted().toArray(Ingredient[]::new);
     }
     
@@ -249,6 +252,7 @@ public class RecipeService {
         if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
 		final Person requester = entityManager.find(Person.class, requesterIdentity);
 
+		// Do it like in PersonService
 		if (requester.getGroup() != Group.ADMIN && recipe.getOwner() != requester) throw new ClientErrorException(Status.FORBIDDEN);
 
 		recipe.getIngredients().add(ingredient);
@@ -271,6 +275,7 @@ public class RecipeService {
 		final Recipe recipe = entityManager.find(Recipe.class, recipeIdentity);
 		final Document illustration = entityManager.find(Document.class, illustrationIdentity);
 		if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
+		// Do it like in PersonService
 		if (requester.getGroup() != Group.ADMIN && requester != recipe.getOwner()) throw new ClientErrorException(Status.FORBIDDEN);
 
 		try {
@@ -303,6 +308,7 @@ public class RecipeService {
 		final Recipe recipe = entityManager.find(Recipe.class, recipeIdentity);
 		final Ingredient ingredient = entityManager.find(Ingredient.class, ingredientIdentity);
 		if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
+		// Do it like in PersonService
 		if (requester.getGroup() != Group.ADMIN && requester != recipe.getOwner()) throw new ClientErrorException(Status.FORBIDDEN);
 
 		try {

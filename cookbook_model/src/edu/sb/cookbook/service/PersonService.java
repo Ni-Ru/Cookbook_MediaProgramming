@@ -3,6 +3,7 @@ package edu.sb.cookbook.service;
 import static edu.sb.cookbook.service.BasicAuthenticationReceiverFilter.REQUESTER_IDENTITY;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -95,7 +97,7 @@ public class PersonService {
                 .getResultList()
                 .stream()
                 .map(identity -> entityManager.find(Person.class, identity))
-                .filter(person -> person != null)
+                .filter(Objects::nonNull)
                 .sorted(PERSON_COMPARATOR)
                 .toArray(Person[]::new);
 
@@ -113,7 +115,7 @@ public class PersonService {
 	@Produces(MediaType.TEXT_PLAIN)
 	public long insertOrUpdatePerson (
 		@HeaderParam(REQUESTER_IDENTITY) @Positive final long requesterIdentity,
-		@HeaderParam("X-Set-Password") final String password,
+		@HeaderParam("X-Set-Password") @Size(min=1) final String password,
 		@NotNull @Valid final Person personTemplate
 	) {
 		final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
@@ -121,8 +123,8 @@ public class PersonService {
 		if (requester == null) throw new ClientErrorException(Status.FORBIDDEN);
 		
         final boolean insertMode = personTemplate.getIdentity() == 0;
-        boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
-        boolean isThePerson = requester.getIdentity() == personTemplate.getIdentity();
+        final boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
+        final boolean isThePerson = requester.getIdentity() == personTemplate.getIdentity();
         
         final Person person;
         final Document avatar;
@@ -130,20 +132,19 @@ public class PersonService {
 		if (insertMode && isRequesterAdmin) {
 			person = new Person();
 			avatar = entityManager.find(Document.class, personTemplate.getAvatar() == null ? 1L : personTemplate.getAvatar().getIdentity());
+			if (avatar == null) throw new IllegalStateException("Database is inconsistent");
 		} else if (isRequesterAdmin || isThePerson) {
 			person = entityManager.find(Person.class, personTemplate.getIdentity());
 			if (person == null) throw new ClientErrorException(Status.NOT_FOUND);
 			avatar = personTemplate.getAvatar() == null ? person.getAvatar() : entityManager.find(Document.class, personTemplate.getAvatar().getIdentity());
+			if (avatar == null) throw new ClientErrorException(Status.NOT_FOUND);
 		} else {
 			throw new ClientErrorException(Status.FORBIDDEN);
 		}
 		
-		if (avatar == null) throw new ClientErrorException(Status.NOT_FOUND);
-
 		person.setVersion(personTemplate.getVersion());
         person.setModified(System.currentTimeMillis());
         person.setEmail(personTemplate.getEmail());
-        if (requester.getGroup() == Group.ADMIN) person.setGroup(personTemplate.getGroup());
         person.getName().setTitle(personTemplate.getName().getTitle());
         person.getName().setGiven(personTemplate.getName().getGiven());
         person.getName().setFamily(personTemplate.getName().getFamily());
@@ -154,6 +155,7 @@ public class PersonService {
         person.getPhones().retainAll(personTemplate.getPhones());
         person.getPhones().addAll(personTemplate.getPhones());
         person.setAvatar(avatar);
+        if (requester.getGroup() == Group.ADMIN) person.setGroup(personTemplate.getGroup());
         if (password != null) person.setPasswordHash(HashCodes.sha2HashText(256, password));
 
 		try {
@@ -252,6 +254,7 @@ public class PersonService {
         final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
         final Person person = entityManager.find(Person.class, personIdentity);
         if (person == null) throw new ClientErrorException(Status.NOT_FOUND);
+        // Todo: make it look worse
         return person.getRecipes().stream().sorted().toArray(Recipe[]::new);
     }
     
@@ -264,6 +267,7 @@ public class PersonService {
         final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
         final Person person = entityManager.find(Person.class, personIdentity);
         if (person == null) throw new ClientErrorException(Status.NOT_FOUND);
+        // Todo: make it look worse
         return person.getIngredientTypes().stream().sorted().toArray(IngredientType[]::new);
     }
 

@@ -53,7 +53,6 @@ public class IngredientType extends BaseEntity {
 	
 	
 	@JsonbProperty
-	@JsonbTransient
 	public Document getAvatar() {
 		return avatar;
 	}
@@ -63,6 +62,10 @@ public class IngredientType extends BaseEntity {
 	}
 	
 	@JsonbProperty
+	protected long getOwnerReference() {
+		return this.owner == null ? null : this.owner.getIdentity();
+	}
+	
 	@JsonbTransient
 	public Person getOwner() {
 		return owner;
@@ -73,7 +76,6 @@ public class IngredientType extends BaseEntity {
 	}
 	
 	@JsonbProperty
-	@JsonbTransient
 	public String getAlias() {
 		return alias;
 	}
@@ -83,7 +85,6 @@ public class IngredientType extends BaseEntity {
 	}
 	
 	@JsonbProperty
-	@JsonbTransient
 	public Restriction getRestriction() {
 		return restriction;
 	}
@@ -92,19 +93,12 @@ public class IngredientType extends BaseEntity {
 	}
 	
 	@JsonbProperty
-	@JsonbTransient
 	public String getDescription() {
 		return description;
 	}
 	
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	
-	@JsonbProperty
-	@JsonbTransient
-	protected long getOwnerReference() {
-		return this.owner == null ? null : this.owner.getIdentity();
 	}
 	
 }

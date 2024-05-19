@@ -39,7 +39,6 @@ public class Address implements Comparable<Address>{
 	private String country;
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getPostcode() {
 		return postcode;
 	}
@@ -49,7 +48,6 @@ public class Address implements Comparable<Address>{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getStreet() {
 		return street;
 	}
@@ -59,7 +57,6 @@ public class Address implements Comparable<Address>{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getCity() {
 		return city;
 	}
@@ -69,7 +66,6 @@ public class Address implements Comparable<Address>{
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getCountry() {
 		return country;
 	}

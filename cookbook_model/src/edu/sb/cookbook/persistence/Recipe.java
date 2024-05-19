@@ -87,7 +87,6 @@ public class Recipe extends BaseEntity {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Document getAvatar() {
 		return avatar;
 	}
@@ -95,8 +94,12 @@ public class Recipe extends BaseEntity {
 	public void setAvatar(Document avatar) {
 		this.avatar = avatar;
 	}
-
+	
 	@JsonbProperty
+	protected long getOwnerReference(){
+		return this.owner == null ? null : this.owner.getIdentity();
+	}
+
 	@JsonbTransient
 	public Person getOwner() {
 		return owner;
@@ -107,12 +110,10 @@ public class Recipe extends BaseEntity {
 	}
 	
 	@JsonbProperty
-	@JsonbTransient
 	protected int getIngredientCount() {
 		return this.ingredients == null ? null : this.ingredients.size();
 	}
 
-	@JsonbProperty
 	@JsonbTransient
 	public Set<Ingredient> getIngredients() {
 		return ingredients;
@@ -122,7 +123,6 @@ public class Recipe extends BaseEntity {
 		this.ingredients = ingredients;
 	}
 
-	@JsonbProperty
 	@JsonbTransient
 	public Set<Document> getIllustrations() {
 		return illustrations;
@@ -133,7 +133,6 @@ public class Recipe extends BaseEntity {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Recipe.Category getCategory() {
 		return category;
 	}
@@ -143,7 +142,6 @@ public class Recipe extends BaseEntity {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getTitle() {
 		return title;
 	}
@@ -153,7 +151,6 @@ public class Recipe extends BaseEntity {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getDescription() {
 		return description;
 	}
@@ -163,7 +160,6 @@ public class Recipe extends BaseEntity {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getInstruction() {
 		return instruction;
 	}
@@ -173,7 +169,6 @@ public class Recipe extends BaseEntity {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public Restriction getRestriction() {
 		// Java.Collection.Stream API
 		return this.ingredients.stream().map(Ingredient::getType).map(IngredientType::getRestriction).min(Comparator.naturalOrder()).orElse(Restriction.VEGAN);
@@ -192,12 +187,6 @@ public class Recipe extends BaseEntity {
 //		return minRestriction;
 		
 
-	}
-	
-	@JsonbProperty
-	@JsonbTransient
-	protected long getOwnerReference(){
-		return this.owner == null ? null : this.owner.getIdentity();
 	}
 	
 }

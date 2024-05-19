@@ -35,7 +35,6 @@ public class Name implements Comparable<Name> {
 	private String given;
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getTitle() {
 		return this.title;
 	}
@@ -45,7 +44,6 @@ public class Name implements Comparable<Name> {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getFamily() {
 		return this.family;
 	}
@@ -55,7 +53,6 @@ public class Name implements Comparable<Name> {
 	}
 
 	@JsonbProperty
-	@JsonbTransient
 	public String getGiven() {
 		return this.given;
 	}
