@@ -3,7 +3,9 @@ package edu.sb.cookbook.service;
 import static edu.sb.cookbook.service.BasicAuthenticationReceiverFilter.REQUESTER_IDENTITY;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
@@ -27,7 +29,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import edu.sb.cookbook.persistence.Document;
-import edu.sb.cookbook.persistence.Ingredient;
 import edu.sb.cookbook.persistence.IngredientType;
 import edu.sb.cookbook.persistence.Person;
 import edu.sb.cookbook.persistence.Person.Group;
@@ -35,12 +36,13 @@ import edu.sb.cookbook.persistence.Recipe;
 import edu.sb.tool.HashCodes;
 import edu.sb.tool.RestJpaLifecycleProvider;
 
+@Path("people")
 public class PersonService {
-	static private final String QUERY_PEOPLE = "SELECT p.identity FROM Person AS p WHERE "
-            + "(:min-created is null or p.created >= :min-created) AND "
-            + "(:max-created is null or p.created <= :max-created) AND "
-            + "(:min-modified is null or p.modified >= :min-modified) AND "
-            + "(:max-modified is null or p.modified <= :max-modified) AND "
+	static private final String QUERY_PEOPLE = "select p.identity from Person as p where "
+            + "(:minCreated is null or p.created >= :minCreated) AND "
+            + "(:maxCreated is null or p.created <= :maxCreated) AND "
+            + "(:minModified is null or p.modified >= :minModified) AND "
+            + "(:maxModified is null or p.modified <= :maxModified) AND "
             + "(:email is null or p.email = :email) AND "
             + "(:group is null or p.group = :group) AND "
             + "(:givenName is null or p.name.given = :givenName) AND "
@@ -60,10 +62,10 @@ public class PersonService {
     public Person[] queryPeople(
             @QueryParam("resultOffset") @PositiveOrZero final Integer resultOffset,
             @QueryParam("resultLimit") @PositiveOrZero final Integer resultLimit,
-            @QueryParam("min-created") final Long minCreated,
-			@QueryParam("max-created") final Long maxCreated,
-			@QueryParam("min-modified") final Long minModified,
-			@QueryParam("max-modified") final Long maxModified,
+            @QueryParam("minCreated") final Long minCreated,
+			@QueryParam("maxCreated") final Long maxCreated,
+			@QueryParam("minModified") final Long minModified,
+			@QueryParam("maxModified") final Long maxModified,
             @QueryParam("email") final String email,
             @QueryParam("group") final Group group,
             @QueryParam("title") final String title,
@@ -81,10 +83,10 @@ public class PersonService {
         if (resultLimit != null) query.setMaxResults(resultLimit);
 
         final Person[] people = query
-                .setParameter("min-created", minCreated)
-                .setParameter("max-created", maxCreated)
-                .setParameter("min-modified", minModified)
-                .setParameter("max-modified", maxModified)
+                .setParameter("minCreated", minCreated)
+                .setParameter("maxCreated", maxCreated)
+                .setParameter("minModified", minModified)
+                .setParameter("maxModified", maxModified)
                 .setParameter("email", email)
                 .setParameter("group", group)
                 .setParameter("title", title)
@@ -104,12 +106,6 @@ public class PersonService {
         return people;
     }
     
-	/**
-	 * HTTP Signature: POST person IN: application/json OUT: text/plain
-	 * @param requesterIdentity the requester identity
-	 * @param personTemplate the person type template
-	 * @return the person identity
-	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -176,12 +172,6 @@ public class PersonService {
 		return person.getIdentity();
 	}
 	
-	/**
-	 * HTTP Signature: DELETE person/{id} IN: - OUT: text/plain
-	 * @param requesterIdentity the requester identity
-	 * @param personIdentity the person identity
-	 * @return the person identity
-	 */
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -199,10 +189,14 @@ public class PersonService {
         boolean isThePerson = requester.getIdentity() == personIdentity;
 		if (!isRequesterAdmin || !isThePerson) throw new ClientErrorException(Status.FORBIDDEN);
 
+		final Set<Recipe> recipes = new HashSet<>(person.getRecipes());
+		final Set<IngredientType> ingredientTypes = new HashSet<>(person.getIngredientTypes());
+		
 		try {
-		    person.getRecipes().forEach(recipe -> recipe.setOwner(null));
-		    person.getIngredientTypes().forEach(type -> type.setOwner(null));
+		    recipes.forEach(recipe -> recipe.setOwner(null));
+		    ingredientTypes.forEach(type -> type.setOwner(null));
 			entityManager.remove(person);
+			entityManager.flush();
 			entityManager.getTransaction().commit();
 		} catch (final Exception e) {
 			if (entityManager.getTransaction().isActive())
@@ -212,11 +206,9 @@ public class PersonService {
 			entityManager.getTransaction().begin();
 		}
 
-		// 2nd level cache eviction if necessary
 		final Cache secondLevelCache = entityManager.getEntityManagerFactory().getCache();
-		secondLevelCache.evict(Person.class, requester.getIdentity());
-		secondLevelCache.evict(Ingredient.class);
-		secondLevelCache.evict(Recipe.class);
+		recipes.forEach(recipe -> secondLevelCache.evict(Recipe.class, recipe.getIdentity()));
+		ingredientTypes.forEach(ingredientType -> secondLevelCache.evict(IngredientType.class, ingredientType.getIdentity()));
 
 		return person.getIdentity();
 	}
@@ -237,7 +229,7 @@ public class PersonService {
 	@GET
 	@Path("requester")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Person findRequester(@HeaderParam("X-Requester-Identity") @Positive long requesterIdentity){
+	public Person findRequester(@HeaderParam(REQUESTER_IDENTITY) @Positive long requesterIdentity){
 		final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
 		final Person person = entityManager.find(Person.class, requesterIdentity);
 		if (person == null) throw new ClientErrorException(Status.NOT_FOUND);
@@ -254,8 +246,14 @@ public class PersonService {
         final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
         final Person person = entityManager.find(Person.class, personIdentity);
         if (person == null) throw new ClientErrorException(Status.NOT_FOUND);
-        // Todo: make it look worse
-        return person.getRecipes().stream().sorted().toArray(Recipe[]::new);
+        
+        final Recipe[] recipes = person
+        		.getRecipes()
+        		.stream()
+        		.sorted()
+        		.toArray(Recipe[]::new);
+        
+        return recipes;
     }
     
     @GET
@@ -267,8 +265,14 @@ public class PersonService {
         final EntityManager entityManager = RestJpaLifecycleProvider.entityManager("local_database");
         final Person person = entityManager.find(Person.class, personIdentity);
         if (person == null) throw new ClientErrorException(Status.NOT_FOUND);
-        // Todo: make it look worse
-        return person.getIngredientTypes().stream().sorted().toArray(IngredientType[]::new);
+        
+        final IngredientType[] ingredientTypes = person
+        		.getIngredientTypes()
+        		.stream()
+        		.sorted()
+        		.toArray(IngredientType[]::new);
+        
+        return ingredientTypes;
     }
 
 }

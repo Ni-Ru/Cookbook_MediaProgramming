@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
-import edu.sb.tool.JsonProtectedPropertyStrategy;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -27,6 +26,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.eclipse.persistence.annotations.CacheIndex;
+
+import edu.sb.tool.JsonProtectedPropertyStrategy;
 
 @Entity
 @Table(schema = "cookbook", name = "Recipe")

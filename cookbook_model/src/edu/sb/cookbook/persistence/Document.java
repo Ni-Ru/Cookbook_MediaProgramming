@@ -12,7 +12,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 import org.eclipse.persistence.annotations.CacheIndex;
+
 import edu.sb.tool.Copyright;
 import edu.sb.tool.HashCodes;
 import edu.sb.tool.JsonProtectedPropertyStrategy;

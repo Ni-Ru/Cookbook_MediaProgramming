@@ -1,8 +1,10 @@
 package edu.sb.cookbook.service;
 
 import static java.util.Objects.requireNonNull;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.client.ClientRequestContext;

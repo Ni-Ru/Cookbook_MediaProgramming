@@ -1,6 +1,7 @@
 package edu.sb.cookbook.service;
 
 import static edu.sb.cookbook.service.BasicAuthenticationReceiverFilter.REQUESTER_IDENTITY;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotEmpty;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import edu.sb.cookbook.persistence.Document;
 import edu.sb.cookbook.persistence.Person;
 import edu.sb.cookbook.persistence.Person.Group;

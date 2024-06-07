@@ -1,7 +1,9 @@
 package edu.sb.cookbook.service;
 
 import static edu.sb.cookbook.service.BasicAuthenticationReceiverFilter.REQUESTER_IDENTITY;
+
 import java.util.Arrays;
+
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -21,13 +23,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+
 import edu.sb.cookbook.persistence.Document;
 import edu.sb.cookbook.persistence.Ingredient;
 import edu.sb.cookbook.persistence.IngredientType;
 import edu.sb.cookbook.persistence.Person;
+import edu.sb.cookbook.persistence.Person.Group;
 import edu.sb.cookbook.persistence.Recipe;
 import edu.sb.cookbook.persistence.Restriction;
-import edu.sb.cookbook.persistence.Person.Group;
 import edu.sb.tool.RestJpaLifecycleProvider;
 
 

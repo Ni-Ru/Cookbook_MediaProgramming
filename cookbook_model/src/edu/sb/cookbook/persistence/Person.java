@@ -1,11 +1,12 @@
 package edu.sb.cookbook.persistence;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
-import edu.sb.tool.JsonProtectedPropertyStrategy;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -28,9 +29,7 @@ import javax.validation.constraints.Size;
 import org.eclipse.persistence.annotations.CacheIndex;
 
 import edu.sb.tool.HashCodes;
-
-import java.util.Collections;
-import java.util.HashSet;
+import edu.sb.tool.JsonProtectedPropertyStrategy;
 
 @Entity
 @Table(schema = "cookbook", name="Person")
