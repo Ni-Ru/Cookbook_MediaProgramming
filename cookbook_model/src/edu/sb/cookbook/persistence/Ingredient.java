@@ -56,7 +56,7 @@ public class Ingredient extends BaseEntity{
     }
     
     @JsonbProperty
-	protected long getRecipeReference() {
+	protected Long getRecipeReference() {
 		return this.recipe == null ? null : this.recipe.getIdentity();
 	}
 

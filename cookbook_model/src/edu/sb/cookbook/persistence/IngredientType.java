@@ -30,7 +30,7 @@ public class IngredientType extends BaseEntity {
     @JoinColumn(nullable = false, updatable = true, name = "avatarReference")
     private Document avatar;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = true)
 	@JoinColumn(nullable = true, updatable = true, name = "ownerReference")
 	private Person owner;
 	
@@ -62,7 +62,7 @@ public class IngredientType extends BaseEntity {
 	}
 	
 	@JsonbProperty
-	protected long getOwnerReference() {
+	protected Long getOwnerReference() {
 		return this.owner == null ? null : this.owner.getIdentity();
 	}
 	

@@ -36,10 +36,10 @@ import edu.sb.tool.RestJpaLifecycleProvider;
 @Path("recipes")
 public class RecipeService {
 	static private final String QUERY_RECIPES = "SELECT r.identity FROM Recipe AS r WHERE "
-	            + "(:min-created is null or r.created >= :min-created) AND "
-	            + "(:max-created is null or r.created <= :max-created) AND "
-	            + "(:min-modified is null or r.modified >= :min-modified) AND "
-	            + "(:max-modified is null or r.modified <= :max-modified) AND "
+	            + "(:minCreated is null or r.created >= :minCreated) AND "
+	            + "(:maxCreated is null or r.created <= :maxCreated) AND "
+	            + "(:minModified is null or r.modified >= :minModified) AND "
+	            + "(:maxModified is null or r.modified <= :maxModified) AND "
 	            + "(:category is null or r.category = :category) AND "
 	            + "(:title is null or r.title = :title) AND "
 	            + "(:descriptionFragment is null or r.description LIKE concat('%', :descriptionFragment, '%')) AND "
@@ -52,10 +52,10 @@ public class RecipeService {
 	public Recipe[] queryRecipe(
 	        @QueryParam("resultOffset") @PositiveOrZero final Integer resultOffset,
 	        @QueryParam("resultLimit") @PositiveOrZero final Integer resultLimit,
-	        @QueryParam("min-created") final Long minCreated,
-			@QueryParam("max-created") final Long maxCreated,
-			@QueryParam("min-modified") final Long minModified,
-			@QueryParam("max-modified") final Long maxModified,
+	        @QueryParam("minCreated") final Long minCreated,
+			@QueryParam("maxCreated") final Long maxCreated,
+			@QueryParam("minModified") final Long minModified,
+			@QueryParam("maxModified") final Long maxModified,
 	        @QueryParam("category") final Category category,
 	        @QueryParam("title") final String title,
 	        @QueryParam("description-fragment") final String descriptionFragment,
@@ -70,10 +70,10 @@ public class RecipeService {
 	    if (resultLimit != null) query.setMaxResults(resultLimit);
 	
 	    final Recipe[] recipes = query
-	            .setParameter("min-created", minCreated)
-	            .setParameter("max-created", maxCreated)
-	            .setParameter("min-modified", minModified)
-	            .setParameter("max-modified", maxModified)
+	            .setParameter("minCreated", minCreated)
+	            .setParameter("maxCreated", maxCreated)
+	            .setParameter("minModified", minModified)
+	            .setParameter("maxModified", maxModified)
 	            .setParameter("category", category)
 	            .setParameter("title", title)
 	            .setParameter("descriptionFragment", descriptionFragment)
