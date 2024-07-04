@@ -114,6 +114,7 @@ public class IngredientTypeService {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("{id}/ingredients")
 	@Produces(MediaType.TEXT_PLAIN)
 	public long createOrUpdateIngredientType (
 		@HeaderParam(REQUESTER_IDENTITY) @Positive final long requesterIdentity,
