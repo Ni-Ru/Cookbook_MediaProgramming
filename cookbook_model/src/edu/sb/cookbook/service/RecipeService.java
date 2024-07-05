@@ -168,7 +168,7 @@ public class RecipeService {
 		if (recipe == null) throw new ClientErrorException(Status.NOT_FOUND);
 		final boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
         final boolean isTheOwner = requester == recipe.getOwner();
-		if (!isRequesterAdmin || !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
+		if (!isRequesterAdmin && !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
 		
 		try {
 			recipe.getIngredients().forEach(ingredient -> entityManager.remove(ingredient));
@@ -236,7 +236,7 @@ public class RecipeService {
     
     
     @POST
-    @Path("recipes/{id}/illustrations")
+    @Path("{id}/illustrations")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
 	public long addIllustration (
@@ -254,7 +254,7 @@ public class RecipeService {
 
 		final boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
         final boolean isTheOwner = requester == recipe.getOwner();
-		if (!isRequesterAdmin || !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
+		if (!isRequesterAdmin && !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
 
 		final Document illustration = entityManager.find(Document.class, illustrationTemplate.getIdentity());
 		recipe.setModified(System.currentTimeMillis());
@@ -279,7 +279,7 @@ public class RecipeService {
     
 	
 	@POST
-    @Path("recipes/{id}/ingredients")
+    @Path("{id}/ingredients")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
 	public long insertOrUpdateIngredient (
@@ -297,7 +297,7 @@ public class RecipeService {
 
 		final boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
         final boolean isTheOwner = requester == recipe.getOwner();
-		if (!isRequesterAdmin || !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
+		if (!isRequesterAdmin && !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
 
 		final boolean insertMode = ingredientTemplate.getIdentity() == 0L;
 		final Ingredient ingredient;
@@ -354,7 +354,7 @@ public class RecipeService {
 		
 		final boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
         final boolean isTheOwner = requester == recipe.getOwner();
-		if (!isRequesterAdmin || !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
+		if (!isRequesterAdmin && !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
 
 		try {
 			recipe.getIllustrations().remove(illustration);
@@ -394,7 +394,7 @@ public class RecipeService {
 		
 		final boolean isRequesterAdmin = requester.getGroup() == Group.ADMIN;
         final boolean isTheOwner = requester == recipe.getOwner();
-		if (!isRequesterAdmin || !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
+		if (!isRequesterAdmin && !isTheOwner) throw new ClientErrorException(Status.FORBIDDEN);
 
 		try {
 			entityManager.remove(ingredient);
